@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { View, Text, TextInput, Pressable, StyleSheet, ScrollView, useWindowDimensions } from "react-native";
-import { Eye, EyeOff, Edit3, Trash2, Check, X, Save } from "lucide-react-native";
+import { Eye, EyeOff, Edit3, Trash2, Check, X, Save, Maximize2 } from "lucide-react-native";
+import { useRouter } from "expo-router";
 import type { Question, QuestionSet } from "../types";
 import { useTheme } from "../hooks/use-theme";
 import { Spacing } from "../constants/theme";
@@ -24,6 +25,7 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
   onDelete,
 }) => {
   const theme = useTheme();
+  const router = useRouter();
   const { width } = useWindowDimensions();
   const isLargeScreen = width >= 640;
 
@@ -265,27 +267,42 @@ export const QuestionCard: React.FC<QuestionCardProps> = ({
 
           {/* Reveal button & Answer container */}
           <View style={styles.answerSection}>
-            <Pressable
-              style={[
-                styles.revealBtn,
-                {
-                  backgroundColor: showAnswer ? theme.backgroundSelected : theme.brandBg,
-                },
-              ]}
-              onPress={() => setShowAnswer(!showAnswer)}
-            >
-              {showAnswer ? (
-                <>
-                  <EyeOff size={12} color={showAnswer ? theme.text : theme.brand} style={{ marginRight: 4 }} />
-                  <Text style={[styles.revealBtnText, { color: theme.text }]}>Hide Answer</Text>
-                </>
-              ) : (
-                <>
-                  <Eye size={12} color={theme.brand} style={{ marginRight: 4 }} />
-                  <Text style={[styles.revealBtnText, { color: theme.brand }]}>Reveal Answer</Text>
-                </>
-              )}
-            </Pressable>
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 8 }}>
+              <Pressable
+                style={[
+                  styles.revealBtn,
+                  {
+                    backgroundColor: showAnswer ? theme.backgroundSelected : theme.brandBg,
+                  },
+                ]}
+                onPress={() => setShowAnswer(!showAnswer)}
+              >
+                {showAnswer ? (
+                  <>
+                    <EyeOff size={12} color={showAnswer ? theme.text : theme.brand} style={{ marginRight: 4 }} />
+                    <Text style={[styles.revealBtnText, { color: theme.text }]}>Hide Answer</Text>
+                  </>
+                ) : (
+                  <>
+                    <Eye size={12} color={theme.brand} style={{ marginRight: 4 }} />
+                    <Text style={[styles.revealBtnText, { color: theme.brand }]}>Reveal Answer</Text>
+                  </>
+                )}
+              </Pressable>
+
+              <Pressable
+                style={[
+                  styles.revealBtn,
+                  {
+                    backgroundColor: theme.accentBg,
+                  },
+                ]}
+                onPress={() => router.push(`/question/${question.id}`)}
+              >
+                <Maximize2 size={12} color={theme.accent} style={{ marginRight: 4 }} />
+                <Text style={[styles.revealBtnText, { color: theme.accent }]}>Focus View</Text>
+              </Pressable>
+            </View>
 
             {showAnswer && (
               <View style={[styles.answerContainer, { borderTopColor: theme.border }]}>
