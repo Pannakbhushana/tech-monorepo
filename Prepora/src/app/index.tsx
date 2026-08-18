@@ -634,7 +634,7 @@ export default function HomeScreen() {
   );
 }
 
-const styles = StyleSheet.create({
+const styles: any = StyleSheet.create({
   container: {
     flex: 1,
   },
@@ -672,7 +672,7 @@ const styles = StyleSheet.create({
   },
   logoSubtext: {
     fontSize: 8,
-    fontWeight: "750",
+    fontWeight: "700",
     letterSpacing: 0.8,
   },
   sidebarSearch: {
@@ -855,7 +855,7 @@ const styles = StyleSheet.create({
   quickAddButtonText: {
     color: "#ffffff",
     fontSize: 12,
-    fontWeight: "750",
+    fontWeight: "700",
   },
   boardBody: {
     padding: Spacing.four,
@@ -892,7 +892,7 @@ const styles = StyleSheet.create({
   },
   filterTabText: {
     fontSize: 12,
-    fontWeight: "750",
+    fontWeight: "700",
   },
   actionRow: {
     flexDirection: "row",
@@ -908,7 +908,7 @@ const styles = StyleSheet.create({
   },
   actionBadgeText: {
     fontSize: 11,
-    fontWeight: "750",
+    fontWeight: "700",
   },
   searchBanner: {
     flexDirection: "row",

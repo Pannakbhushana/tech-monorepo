@@ -183,7 +183,6 @@ export default function ExploreScreen() {
                         <Pressable
                           style={styles.actionIconButton}
                           onPress={() => setConfirmResetId(set.id)}
-                          title="Reset progress"
                         >
                           <RotateCcw size={14} color={theme.warning} />
                         </Pressable>
@@ -192,7 +191,6 @@ export default function ExploreScreen() {
                       <Pressable
                         style={styles.actionIconButton}
                         onPress={() => setConfirmDeleteId(set.id)}
-                        title="Delete category"
                       >
                         <Trash2 size={14} color={theme.danger} />
                       </Pressable>
@@ -204,19 +202,6 @@ export default function ExploreScreen() {
           )}
         </View>
       </View>
-
-      {/* Add Set Modal */}
-      {isAddSetOpen && (
-        <AddSetModal
-          isOpen={isAddSetOpen}
-          onClose={() => setIsAddSetOpen(false)}
-          onAdd={(name, desc) => {
-            const newId = usePrepStore.getState ? usePrepStore.getState().addSet(name, desc) : "";
-            // Tapping save returns new ID. In context:
-            // Since we import hook, let's call the function
-          }}
-        />
-      )}
 
       {/* Context handlers */}
       <AddSetModalWrapper isOpen={isAddSetOpen} onClose={() => setIsAddSetOpen(false)} />
@@ -276,7 +261,7 @@ function AddSetModalWrapper({ isOpen, onClose }: { isOpen: boolean; onClose: () 
   );
 }
 
-const styles = StyleSheet.create({
+const styles: any = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
@@ -438,6 +423,6 @@ const styles = StyleSheet.create({
   emptyBtnText: {
     color: "#ffffff",
     fontSize: 13,
-    fontWeight: "750",
+    fontWeight: "700",
   },
 });
