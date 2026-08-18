@@ -551,6 +551,12 @@ export default function HomeScreen() {
         },
       ]}
     >
+      {showThemeMenu && (
+        <Pressable
+          style={[StyleSheet.absoluteFill, { zIndex: 5, cursor: 'default' } as any]}
+          onPress={() => setShowThemeMenu(false)}
+        />
+      )}
       {isWebSplit ? (
         /* RESPONSIVE SPLIT-PANE LAYOUT FOR WEB / WIDE SCREENS */
         <View style={styles.splitLayout}>
@@ -825,6 +831,9 @@ const styles: any = StyleSheet.create({
     borderBottomWidth: 1,
     flexWrap: "wrap",
     gap: 12,
+    zIndex: 100,
+    elevation: 10,
+    position: "relative",
   },
   boardHeaderLeft: {
     flex: 1,
@@ -845,7 +854,7 @@ const styles: any = StyleSheet.create({
   },
   themeSelectorContainer: {
     position: "relative",
-    zIndex: 10,
+    zIndex: 200,
   },
   iconButton: {
     width: 36,
@@ -867,7 +876,8 @@ const styles: any = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 5,
+    elevation: 9999,
+    zIndex: 300,
   },
   dropdownItem: {
     flexDirection: "row",
@@ -1019,6 +1029,9 @@ const styles: any = StyleSheet.create({
     justifyContent: "space-between",
     paddingHorizontal: Spacing.four,
     borderBottomWidth: 1,
+    zIndex: 100,
+    elevation: 10,
+    position: "relative",
   },
   menuButton: {
     padding: 8,
@@ -1057,8 +1070,8 @@ const styles: any = StyleSheet.create({
     shadowOffset: { width: 0, height: 6 },
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    elevation: 5,
-    zIndex: 200,
+    elevation: 9999,
+    zIndex: 9999,
   },
   mobileSidebarOverlay: {
     position: "absolute",
