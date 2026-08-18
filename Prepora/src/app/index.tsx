@@ -24,15 +24,16 @@ import {
   HelpCircle,
   FolderPlus,
   Trash2,
+  Menu,
 } from "lucide-react-native";
-import { usePrepStore } from "@/context/PrepStoreContext";
-import { useTheme } from "@/hooks/use-theme";
-import { Spacing } from "@/constants/theme";
-import { StatsPanel } from "@/components/StatsPanel";
-import { QuestionCard } from "@/components/QuestionCard";
-import { AddQuestionModal } from "@/components/AddQuestionModal";
-import { AddSetModal } from "@/components/AddSetModal";
-import { ConfirmModal } from "@/components/ConfirmModal";
+import { usePrepStore } from "../context/PrepStoreContext";
+import { useTheme } from "../hooks/use-theme";
+import { Spacing } from "../constants/theme";
+import { StatsPanel } from "../components/StatsPanel";
+import { QuestionCard } from "../components/QuestionCard";
+import { AddQuestionModal } from "../components/AddQuestionModal";
+import { AddSetModal } from "../components/AddSetModal";
+import { ConfirmModal } from "../components/ConfirmModal";
 
 export default function HomeScreen() {
   const {
@@ -68,6 +69,7 @@ export default function HomeScreen() {
   // Modal views visibility
   const [isAddQuestionOpen, setIsAddQuestionOpen] = useState(false);
   const [isAddSetOpen, setIsAddSetOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const [showThemeMenu, setShowThemeMenu] = useState(false);
   const [confirmConfig, setConfirmConfig] = useState<{
     title: string;
@@ -162,50 +164,52 @@ export default function HomeScreen() {
         </View>
 
         <View style={styles.boardHeaderRight}>
-          {/* Theme Dropdown Toggle */}
-          <View style={styles.themeSelectorContainer}>
-            <Pressable
-              style={[styles.iconButton, { borderColor: themeColors.border, backgroundColor: themeColors.card }]}
-              onPress={() => setShowThemeMenu(!showThemeMenu)}
-            >
-              {renderThemeIcon()}
-            </Pressable>
+          {/* Theme Dropdown Toggle - Only visible on desktop/wide screens, since mobile layout has it in the top navbar */}
+          {isWebSplit && (
+            <View style={styles.themeSelectorContainer}>
+              <Pressable
+                style={[styles.iconButton, { borderColor: themeColors.border, backgroundColor: themeColors.card }]}
+                onPress={() => setShowThemeMenu(!showThemeMenu)}
+              >
+                {renderThemeIcon()}
+              </Pressable>
 
-            {showThemeMenu && (
-              <View style={[styles.themeDropdown, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
-                <Pressable
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setTheme("light");
-                    setShowThemeMenu(false);
-                  }}
-                >
-                  <Sun size={14} color="#f59e0b" style={styles.dropdownIcon} />
-                  <Text style={[styles.dropdownText, { color: themeColors.text }]}>Light Mode</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setTheme("dark");
-                    setShowThemeMenu(false);
-                  }}
-                >
-                  <Moon size={14} color="#818cf8" style={styles.dropdownIcon} />
-                  <Text style={[styles.dropdownText, { color: themeColors.text }]}>Dark Mode</Text>
-                </Pressable>
-                <Pressable
-                  style={styles.dropdownItem}
-                  onPress={() => {
-                    setTheme("system");
-                    setShowThemeMenu(false);
-                  }}
-                >
-                  <Laptop size={14} color={themeColors.textSecondary} style={styles.dropdownIcon} />
-                  <Text style={[styles.dropdownText, { color: themeColors.text }]}>System</Text>
-                </Pressable>
-              </View>
-            )}
-          </View>
+              {showThemeMenu && (
+                <View style={[styles.themeDropdown, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
+                  <Pressable
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setTheme("light");
+                      setShowThemeMenu(false);
+                    }}
+                  >
+                    <Sun size={14} color="#f59e0b" style={styles.dropdownIcon} />
+                    <Text style={[styles.dropdownText, { color: themeColors.text }]}>Light Mode</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setTheme("dark");
+                      setShowThemeMenu(false);
+                    }}
+                  >
+                    <Moon size={14} color="#818cf8" style={styles.dropdownIcon} />
+                    <Text style={[styles.dropdownText, { color: themeColors.text }]}>Dark Mode</Text>
+                  </Pressable>
+                  <Pressable
+                    style={styles.dropdownItem}
+                    onPress={() => {
+                      setTheme("system");
+                      setShowThemeMenu(false);
+                    }}
+                  >
+                    <Laptop size={14} color={themeColors.textSecondary} style={styles.dropdownIcon} />
+                    <Text style={[styles.dropdownText, { color: themeColors.text }]}>System</Text>
+                  </Pressable>
+                </View>
+              )}
+            </View>
+          )}
 
           {/* Quick Add Question Button */}
           <Pressable
@@ -319,19 +323,6 @@ export default function HomeScreen() {
             )}
           </View>
         </View>
-
-        {/* Search Results Details Banner */}
-        {searchQuery.trim() ? (
-          <View style={[styles.searchBanner, { backgroundColor: themeColors.backgroundSelected, borderColor: themeColors.border }]}>
-            <Text style={[styles.searchBannerText, { color: themeColors.textSecondary }]}>
-              Showing results for "<Text style={{ color: themeColors.text, fontWeight: "700" }}>{searchQuery}</Text>"
-            </Text>
-            <Pressable onPress={() => setSearchQuery("")}>
-              <Text style={{ color: themeColors.brand, fontWeight: "700", fontSize: 12 }}>Clear</Text>
-            </Pressable>
-          </View>
-        ) : null}
-
         {/* Questions cards list */}
         <View style={styles.cardsList}>
           {filteredQuestions.length > 0 ? (
@@ -434,6 +425,122 @@ export default function HomeScreen() {
     </View>
   );
 
+  const renderSidebar = (isCollapsible = false) => {
+    return (
+      <View
+        style={[
+          styles.sidebar,
+          { backgroundColor: themeColors.card, borderRightColor: themeColors.border },
+          isCollapsible && styles.mobileSidebarOverlay,
+        ]}
+      >
+        <View style={[styles.sidebarHeader, { borderBottomColor: themeColors.border }]}>
+          <View style={styles.logoRow}>
+            <View style={[styles.logoIcon, { backgroundColor: themeColors.brand }]}>
+              <Sparkles size={16} color="#ffffff" />
+            </View>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.logoText, { color: themeColors.brand }]}>Prepora</Text>
+              <Text style={[styles.logoSubtext, { color: themeColors.textSecondary }]}>REVISION BOARD</Text>
+            </View>
+            {isCollapsible && (
+              <Pressable style={styles.closeSidebarButton} onPress={() => setIsSidebarOpen(false)}>
+                <X size={18} color={themeColors.textSecondary} />
+              </Pressable>
+            )}
+          </View>
+        </View>
+
+        {/* Sidebar Sets List */}
+        <ScrollView contentContainerStyle={styles.sidebarScroll} showsVerticalScrollIndicator={false}>
+          <View style={styles.sidebarSectionTitleRow}>
+            <Text style={[styles.sidebarSectionTitle, { color: themeColors.textSecondary }]}>Subjects</Text>
+            <Pressable onPress={() => { setIsAddSetOpen(true); if (isCollapsible) setIsSidebarOpen(false); }}>
+              <FolderPlus size={14} color={themeColors.brand} />
+            </Pressable>
+          </View>
+
+          <View style={styles.sidebarList}>
+            {/* All Subjects Item */}
+            <Pressable
+              style={[
+                styles.sidebarItem,
+                activeSetId === "all" && [styles.sidebarItemActive, { backgroundColor: themeColors.brandBg }],
+              ]}
+              onPress={() => { setActiveSetId("all"); if (isCollapsible) setIsSidebarOpen(false); }}
+            >
+              <View style={styles.sidebarItemLeft}>
+                <Sparkles size={14} color={activeSetId === "all" ? themeColors.brand : themeColors.textSecondary} style={{ marginRight: 8 }} />
+                <Text
+                  style={[
+                    styles.sidebarItemName,
+                    { color: activeSetId === "all" ? themeColors.brand : themeColors.text },
+                    activeSetId === "all" && { fontWeight: "700" },
+                  ]}
+                >
+                  All Subjects
+                </Text>
+              </View>
+              <Text style={[styles.sidebarItemBadge, { backgroundColor: themeColors.background, color: themeColors.textSecondary }]}>
+                {questions.filter((q) => !q.isRevised).length}/{questions.length}
+              </Text>
+            </Pressable>
+
+            {/* Categories */}
+            {sets.map((set) => {
+              const setQuestions = questions.filter((q) => q.setId === set.id);
+              const isSelected = activeSetId === set.id;
+
+              return (
+                <Pressable
+                  key={set.id}
+                  style={[
+                    styles.sidebarItem,
+                    isSelected && [styles.sidebarItemActive, { backgroundColor: themeColors.brandBg }],
+                  ]}
+                  onPress={() => { setActiveSetId(set.id); if (isCollapsible) setIsSidebarOpen(false); }}
+                >
+                  <View style={styles.sidebarItemLeft}>
+                    <View
+                      style={[
+                        styles.dot,
+                        { backgroundColor: isSelected ? themeColors.brand : themeColors.textSecondary + "40" },
+                      ]}
+                    />
+                    <Text
+                      style={[
+                        styles.sidebarItemName,
+                        { color: isSelected ? themeColors.brand : themeColors.text },
+                        isSelected && { fontWeight: "700" },
+                      ]}
+                      numberOfLines={1}
+                    >
+                      {set.name}
+                    </Text>
+                  </View>
+                  <View style={styles.sidebarItemRight}>
+                    <Text style={[styles.sidebarItemBadge, { backgroundColor: themeColors.background, color: themeColors.textSecondary }]}>
+                      {setQuestions.filter((q) => !q.isRevised).length}/{setQuestions.length}
+                    </Text>
+                    <Pressable
+                      style={styles.sidebarDeleteBtn}
+                      onPress={(e) => {
+                        e.stopPropagation();
+                        handleDeleteSet(set.id, set.name);
+                      }}
+                    >
+                      <Trash2 size={12} color={themeColors.danger} />
+                    </Pressable>
+                  </View>
+                </Pressable>
+              );
+            })}
+          </View>
+        </ScrollView>
+      </View>
+    );
+  };
+
   return (
     <View
       style={[
@@ -447,152 +554,91 @@ export default function HomeScreen() {
       {isWebSplit ? (
         /* RESPONSIVE SPLIT-PANE LAYOUT FOR WEB / WIDE SCREENS */
         <View style={styles.splitLayout}>
-          {/* Sidebar */}
-          <View style={[styles.sidebar, { backgroundColor: themeColors.card, borderRightColor: themeColors.border }]}>
-            <View style={[styles.sidebarHeader, { borderBottomColor: themeColors.border }]}>
-              <View style={styles.logoRow}>
-                <View style={[styles.logoIcon, { backgroundColor: themeColors.brand }]}>
-                  <Sparkles size={16} color="#ffffff" />
-                </View>
-                <View>
-                  <Text style={[styles.logoText, { color: themeColors.brand }]}>Prepora</Text>
-                  <Text style={[styles.logoSubtext, { color: themeColors.textSecondary }]}>REVISION BOARD</Text>
-                </View>
-              </View>
-            </View>
-
-            {/* Sidebar Search */}
-            <View style={styles.sidebarSearch}>
-              <View style={[styles.searchBox, { backgroundColor: themeColors.background, borderColor: themeColors.border }]}>
-                <Search size={14} color={themeColors.textSecondary} style={{ marginRight: 8 }} />
-                <TextInput
-                  style={[styles.searchInput, { color: themeColors.text }]}
-                  placeholder="Search cards..."
-                  placeholderTextColor={themeColors.textSecondary + "80"}
-                  value={searchQuery}
-                  onChangeText={setSearchQuery}
-                />
-                {searchQuery ? (
-                  <Pressable onPress={() => setSearchQuery("")}>
-                    <X size={14} color={themeColors.textSecondary} />
-                  </Pressable>
-                ) : null}
-              </View>
-            </View>
-
-            {/* Sidebar Sets List */}
-            <ScrollView contentContainerStyle={styles.sidebarScroll} showsVerticalScrollIndicator={false}>
-              <View style={styles.sidebarSectionTitleRow}>
-                <Text style={[styles.sidebarSectionTitle, { color: themeColors.textSecondary }]}>Subjects</Text>
-                <Pressable onPress={() => setIsAddSetOpen(true)}>
-                  <FolderPlus size={14} color={themeColors.brand} />
-                </Pressable>
-              </View>
-
-              <View style={styles.sidebarList}>
-                {/* All Subjects Item */}
-                <Pressable
-                  style={[
-                    styles.sidebarItem,
-                    activeSetId === "all" && [styles.sidebarItemActive, { backgroundColor: themeColors.brandBg }],
-                  ]}
-                  onPress={() => setActiveSetId("all")}
-                >
-                  <View style={styles.sidebarItemLeft}>
-                    <Sparkles size={14} color={activeSetId === "all" ? themeColors.brand : themeColors.textSecondary} style={{ marginRight: 8 }} />
-                    <Text
-                      style={[
-                        styles.sidebarItemName,
-                        { color: activeSetId === "all" ? themeColors.brand : themeColors.text },
-                        activeSetId === "all" && { fontWeight: "700" },
-                      ]}
-                    >
-                      All Subjects
-                    </Text>
-                  </View>
-                  <Text style={[styles.sidebarItemBadge, { backgroundColor: themeColors.background, color: themeColors.textSecondary }]}>
-                    {questions.filter((q) => !q.isRevised).length}/{questions.length}
-                  </Text>
-                </Pressable>
-
-                {/* Categories */}
-                {sets.map((set) => {
-                  const setQuestions = questions.filter((q) => q.setId === set.id);
-                  const isSelected = activeSetId === set.id;
-
-                  return (
-                    <Pressable
-                      key={set.id}
-                      style={[
-                        styles.sidebarItem,
-                        isSelected && [styles.sidebarItemActive, { backgroundColor: themeColors.brandBg }],
-                      ]}
-                      onPress={() => setActiveSetId(set.id)}
-                    >
-                      <View style={styles.sidebarItemLeft}>
-                        <View
-                          style={[
-                            styles.dot,
-                            { backgroundColor: isSelected ? themeColors.brand : themeColors.textSecondary + "40" },
-                          ]}
-                        />
-                        <Text
-                          style={[
-                            styles.sidebarItemName,
-                            { color: isSelected ? themeColors.brand : themeColors.text },
-                            isSelected && { fontWeight: "700" },
-                          ]}
-                          numberOfLines={1}
-                        >
-                          {set.name}
-                        </Text>
-                      </View>
-                      <View style={styles.sidebarItemRight}>
-                        <Text style={[styles.sidebarItemBadge, { backgroundColor: themeColors.background, color: themeColors.textSecondary }]}>
-                          {setQuestions.filter((q) => !q.isRevised).length}/{setQuestions.length}
-                        </Text>
-                        <Pressable
-                          style={styles.sidebarDeleteBtn}
-                          onPress={(e) => {
-                            e.stopPropagation();
-                            handleDeleteSet(set.id, set.name);
-                          }}
-                        >
-                          <Trash2 size={12} color={themeColors.danger} />
-                        </Pressable>
-                      </View>
-                    </Pressable>
-                  );
-                })}
-              </View>
-            </ScrollView>
-          </View>
-
+          {renderSidebar(false)}
           {/* Main Board Pane */}
           <View style={styles.splitMain}>{BoardContent}</View>
         </View>
       ) : (
-        /* SINGLE SCREEN MOBILE VIEW (Navigation tab manages screen switching) */
+        /* SINGLE SCREEN MOBILE VIEW WITH COLLAPSIBLE SIDEBAR DRAWER */
         <View style={styles.mobileLayout}>
-          {/* Mobile search bar */}
-          <View style={styles.mobileSearchWrapper}>
-            <View style={[styles.searchBox, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
-              <Search size={14} color={themeColors.textSecondary} style={{ marginRight: 8 }} />
-              <TextInput
-                style={[styles.searchInput, { color: themeColors.text }]}
-                placeholder="Search concepts, answers..."
-                placeholderTextColor={themeColors.textSecondary + "80"}
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              {searchQuery ? (
-                <Pressable onPress={() => setSearchQuery("")}>
-                  <X size={14} color={themeColors.textSecondary} />
+          {/* Mobile Header Bar - Logo on left, Hamburger & Theme Toggle on right */}
+          <View style={[styles.mobileHeader, { backgroundColor: themeColors.card, borderBottomColor: themeColors.border }]}>
+            <View style={styles.logoRow}>
+              <View style={[styles.logoIcon, { backgroundColor: themeColors.brand, width: 26, height: 26, borderRadius: 6 }]}>
+                <Sparkles size={14} color="#ffffff" />
+              </View>
+              <Text style={[styles.logoText, { color: themeColors.brand, fontSize: 16, fontWeight: "900" }]}>Prepora</Text>
+            </View>
+
+            <View style={{ flexDirection: "row", alignItems: "center", gap: 12 }}>
+              {/* Theme Dropdown Toggle */}
+              <View style={styles.themeSelectorContainer}>
+                <Pressable
+                  style={[styles.iconButton, { width: 32, height: 32, borderRadius: 8, borderColor: themeColors.border, backgroundColor: themeColors.background }]}
+                  onPress={() => setShowThemeMenu(!showThemeMenu)}
+                >
+                  {theme === "light" && <Sun size={15} color="#f59e0b" />}
+                  {theme === "dark" && <Moon size={15} color="#6366f1" />}
+                  {theme === "system" && <Laptop size={15} color={themeColors.textSecondary} />}
                 </Pressable>
-              ) : null}
+
+                {showThemeMenu && (
+                  <View style={[styles.dropdownMenu, { backgroundColor: themeColors.card, borderColor: themeColors.border }]}>
+                    <Pressable
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setTheme("light");
+                        setShowThemeMenu(false);
+                      }}
+                    >
+                      <Sun size={12} color="#f59e0b" style={{ marginRight: 6 }} />
+                      <Text style={[styles.dropdownText, { color: themeColors.text }]}>Light Mode</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setTheme("dark");
+                        setShowThemeMenu(false);
+                      }}
+                    >
+                      <Moon size={12} color="#6366f1" style={{ marginRight: 6 }} />
+                      <Text style={[styles.dropdownText, { color: themeColors.text }]}>Dark Mode</Text>
+                    </Pressable>
+                    <Pressable
+                      style={styles.dropdownItem}
+                      onPress={() => {
+                        setTheme("system");
+                        setShowThemeMenu(false);
+                      }}
+                    >
+                      <Laptop size={12} color={themeColors.textSecondary} style={{ marginRight: 6 }} />
+                      <Text style={[styles.dropdownText, { color: themeColors.text }]}>System</Text>
+                    </Pressable>
+                  </View>
+                )}
+              </View>
+
+              <Pressable style={styles.menuButton} onPress={() => setIsSidebarOpen(true)}>
+                <Menu size={22} color={themeColors.text} />
+              </Pressable>
             </View>
           </View>
+
+          {/* Board Content (no search bar at top!) */}
           {BoardContent}
+
+
+
+          {/* Collapsible Mobile Sidebar Drawer */}
+          {isSidebarOpen && (
+            <View style={StyleSheet.absoluteFill}>
+              <Pressable
+                style={[StyleSheet.absoluteFill, { backgroundColor: "rgba(15, 23, 42, 0.4)" }]}
+                onPress={() => setIsSidebarOpen(false)}
+              />
+              {renderSidebar(true)}
+            </View>
+          )}
         </View>
       )}
 
@@ -965,5 +1011,72 @@ const styles: any = StyleSheet.create({
     color: "#ffffff",
     fontSize: 13,
     fontWeight: "700",
+  },
+  mobileHeader: {
+    height: 56,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    paddingHorizontal: Spacing.four,
+    borderBottomWidth: 1,
+  },
+  menuButton: {
+    padding: 8,
+    borderRadius: 8,
+    marginLeft: -8,
+  },
+  mobileHeaderTitleContainer: {
+    flex: 1,
+    paddingHorizontal: 8,
+  },
+  mobileHeaderTitle: {
+    fontSize: 15,
+    fontWeight: "800",
+  },
+  themeToggleWrapper: {
+    position: "relative",
+    zIndex: 100,
+  },
+  themeBtn: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  dropdownMenu: {
+    position: "absolute",
+    top: 38,
+    right: 0,
+    borderWidth: 1,
+    borderRadius: 10,
+    paddingVertical: 4,
+    width: 120,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 5,
+    zIndex: 200,
+  },
+  mobileSidebarOverlay: {
+    position: "absolute",
+    left: 0,
+    top: 0,
+    bottom: 0,
+    width: 280,
+    height: "100%",
+    borderRightWidth: 1,
+    shadowColor: "#000",
+    shadowOffset: { width: 4, height: 0 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 10,
+    zIndex: 1000,
+  },
+  closeSidebarButton: {
+    padding: 6,
+    borderRadius: 8,
   },
 });

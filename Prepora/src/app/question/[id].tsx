@@ -14,6 +14,14 @@ export default function QuestionDetailScreen() {
   const router = useRouter();
   const safeAreaInsets = useSafeAreaInsets();
 
+  const handleBack = () => {
+    if (router.canGoBack()) {
+      router.back();
+    } else {
+      router.replace("/");
+    }
+  };
+
   const questionIndex = questions.findIndex((q) => q.id === id);
   const question = questions[questionIndex];
 
@@ -92,11 +100,11 @@ export default function QuestionDetailScreen() {
     >
       {/* Header Bar */}
       <View style={[styles.header, { borderBottomColor: theme.border }]}>
-        <Pressable style={styles.backIconButton} onPress={() => router.back()}>
+        <Pressable style={styles.backIconButton} onPress={handleBack}>
           <ChevronLeft size={24} color={theme.text} />
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.text }]}>Dedicated Study View</Text>
-        <View style={{ width: 40 }} /> {/* balance layout */}
+        <View style={{ width: 40 }} />
       </View>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
