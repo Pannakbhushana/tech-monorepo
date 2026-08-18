@@ -101,8 +101,8 @@ export default function QuestionDetailScreen() {
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
         <View style={styles.mainWrapper}>
-          {/* Card Container */}
-          <View style={[styles.detailCard, { backgroundColor: theme.card, borderColor: question.isRevised ? theme.success : theme.border }]}>
+          {/* Study content view directly */}
+          <View style={styles.detailContent}>
             
             {/* Meta Tags */}
             <View style={styles.metaRow}>
@@ -221,15 +221,9 @@ const styles: any = StyleSheet.create({
     maxWidth: 700,
     gap: Spacing.four,
   },
-  detailCard: {
-    borderRadius: 24,
-    borderWidth: 1,
-    padding: Spacing.five,
-    shadowColor: "#0f172a",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 3,
+  detailContent: {
+    width: "100%",
+    paddingVertical: Spacing.two,
   },
   metaRow: {
     flexDirection: "row",
